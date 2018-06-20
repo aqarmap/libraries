@@ -1,11 +1,11 @@
 
 $(function() {
 
-    $.fn.imagesLoaded 		= function( callback ) {
+    $.fn.imagesLoaded       = function( callback ) {
         var $images = this.find('img'),
-            len 	= $images.length,
-            _this 	= this,
-            blank 	= 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+            len     = $images.length,
+            _this   = this,
+            blank   = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
         function triggerCallback() {
             callback.call( _this, $images );
@@ -37,22 +37,22 @@ $(function() {
     };
 
     // gallery container
-    var $rgGallery			= $('#rg-gallery'),
+    var $rgGallery          = $('#rg-gallery'),
         // carousel container
-        $esCarousel			= $rgGallery.find('div.es-carousel-wrapper'),
+        $esCarousel         = $rgGallery.find('div.es-carousel-wrapper'),
         // the carousel items
-        $items				= $esCarousel.find('ul > li'),
+        $items              = $esCarousel.find('ul > li'),
         // total number of items
-        itemsCount			= $items.length;
+        itemsCount          = $items.length;
 
-    Gallery				= (function() {
+    Gallery             = (function() {
         // index of the current item
-        var current			= 0,
+        var current         = 0,
             // mode : carousel || fullview
-            mode 			= 'carousel',
+            mode            = 'carousel',
             // control if one image is being loaded
-            anim			= false,
-            init			= function() {
+            anim            = false,
+            init            = function() {
 
                 // (not necessary) preloading the images here...
                 $items.add('<img src="images/ajax-loader.gif"/><img src="images/black.png"/>').imagesLoaded( function() {
@@ -72,19 +72,19 @@ $(function() {
                     _initCarousel();
 
             },
-            _initCarousel	= function() {
+            _initCarousel   = function() {
 
                 // we are using the elastislide plugin:
                 // http://tympanus.net/codrops/2011/09/12/elastislide-responsive-carousel/
                 $esCarousel.show().elastislide({
-                    imageW 	: 65,
-                    onClick	: function( $item ) {
+                    imageW  : 65,
+                    onClick : function( $item ) {
                         if( anim ) return false;
-                        anim	= true;
+                        anim    = true;
                         // on click show image
                         _showImage($item);
                         // change current
-                        current	= $item.index();
+                        current = $item.index();
                     }
                 });
 
@@ -101,9 +101,9 @@ $(function() {
 
                 if( itemsCount > 1 ) {
                     // addNavigation
-                    var $navPrev		= $rgGallery.find('a.rg-image-nav-prev'),
-                        $navNext		= $rgGallery.find('a.rg-image-nav-next'),
-                        $imgWrapper		= $rgGallery.find('div.rg-image');
+                    var $navPrev        = $rgGallery.find('a.rg-image-nav-prev'),
+                        $navNext        = $rgGallery.find('a.rg-image-nav-next'),
+                        $imgWrapper     = $rgGallery.find('div.rg-image');
 
                     $navPrev.on('click.rgGallery', function( event ) {
                         _navigate( 'left' );
@@ -117,10 +117,10 @@ $(function() {
 
                     // add touchwipe events on the large image wrapper
                     $imgWrapper.touchwipe({
-                        wipeLeft			: function() {
+                        wipeLeft            : function() {
                             _navigate( 'right' );
                         },
-                        wipeRight			: function() {
+                        wipeRight           : function() {
                             _navigate( 'left' );
                         },
                         preventDefaultEvents: false
@@ -136,41 +136,54 @@ $(function() {
                 }
 
             },
-            _navigate		= function( dir ) {
+            _navigate       = function( dir ) {
 
                 // navigate through the large images
 
                 if( anim ) return false;
-                anim	= true;
+                anim    = true;
 
                 if( dir === 'right' ) {
-                    if( current + 1 >= itemsCount )
+                    if( current + 1 >= itemsCount ){
+                        $('#CTA').hide();
                         current = 0;
-                    else
+                    }
+                    else if( current + 2 == itemsCount ){
+                        $('#CTA').show();
                         ++current;
+                    }
+                    else{
+                        $('#CTA').hide();
+                        ++current;
+                    }
                 }
                 else if( dir === 'left' ) {
-                    if( current - 1 < 0 )
+                    if( current - 1 < 0 ){
+                        $('#CTA').show();
                         current = itemsCount - 1;
-                    else
+                    }
+                    else{
+                        $('#CTA').hide();
                         --current;
+                    }
+
                 }
 
                 _showImage( $items.eq( current ) );
 
             },
-            _showImage		= function( $item ) {
+            _showImage      = function( $item ) {
 
                 // shows the large image that is associated to the $item
 
-                var $loader	= $rgGallery.find('div.rg-loading').show();
+                var $loader = $rgGallery.find('div.rg-loading').show();
 
                 $items.removeClass('selected');
                 $item.addClass('selected');
 
-                var $thumb		= $item.find('img'),
-                    largesrc	= $thumb.data('large'),
-                    title		= $thumb.data('description');
+                var $thumb      = $item.find('img'),
+                    largesrc    = $thumb.data('large'),
+                    title       = $thumb.data('description');
 
                 $('<img/>').load( function() {
 
@@ -186,23 +199,23 @@ $(function() {
                         $esCarousel.elastislide( 'setCurrent', current );
                     }
 
-                    anim	= false;
+                    anim    = false;
 
                 }).attr( 'src', largesrc );
 
             },
-            addItems		= function( $new ) {
+            addItems        = function( $new ) {
 
                 $esCarousel.find('ul').append($new);
-                $items 		= $items.add( $($new) );
-                itemsCount	= $items.length;
+                $items      = $items.add( $($new) );
+                itemsCount  = $items.length;
                 $esCarousel.elastislide( 'add', $new );
 
             };
 
         return {
-            init 		: init,
-            addItems	: addItems
+            init        : init,
+            addItems    : addItems
         };
 
     })();
@@ -210,4 +223,4 @@ $(function() {
     Gallery.init();
 });
 
-/*##########################################*/ 
+/*##########################################*/
